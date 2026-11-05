@@ -99,14 +99,38 @@ python course_auto.py loop --answers '{"...":"D"}' --max-chapters 10
 
 ---
 
-## 环境
+## 环境（换电脑照这个装）
 
-- Windows + Edge（已登录超星）
-- 装 `extension/` 这个扩展：`edge://extensions` → 开发人员模式 → 加载解压缩的扩展
-- Python 3.10+，**无第三方依赖**（`extbridge.py` 只用标准库，自己实现了 WebSocket 服务端）
+| 需要 | 说明 |
+| --- | --- |
+| Windows | `solver.py` 用 `user32` 找窗口、`PIL.ImageGrab` 截屏，只支持 Windows |
+| Python 3.10+ | |
+| `pip install pillow` | 只有自动答题（截图）需要；只播视频不用装 |
+| Edge（已登录超星） | 或 Chrome，扩展通用 |
 
-扩展和 Python 之间靠 WebSocket（默认端口 8849）通信，扩展用 `chrome.debugger`
-拿完整 CDP 能力，所以能操作你已经开着的那个浏览器窗口。
+装扩展：
+
+1. `edge://extensions` → 打开「开发人员模式」
+2. 「加载解压缩的扩展」→ 选仓库里的 `extension/` 目录
+3. 装好后会弹一次「AutoPilot Bridge 已开始调试此浏览器」，正常
+
+扩展和 Python 之间靠 WebSocket（默认 `127.0.0.1:8849`）通信，扩展用 `chrome.debugger`
+拿完整 CDP 能力，所以能操作你**已经登录**的那个浏览器窗口，不用重新登录。
+
+### 自动答题要配一个视觉模型
+
+`solver.py` 会自动选后端：
+
+1. 本机装了 autopilot → 用它的 `vision`（读它自己的配置），什么都不用设；
+2. 没装 autopilot → 读这三个环境变量，任何 OpenAI 兼容接口都行：
+
+```bat
+set VISION_API_BASE=https://api.openai.com/v1
+set VISION_API_KEY=sk-xxxx
+set VISION_MODEL=gpt-4o-mini
+```
+
+不配也能跑，只是 `loop` 会跳过测验（视频任务点照样完成），测验你自己在网页上做。
 
 ---
 

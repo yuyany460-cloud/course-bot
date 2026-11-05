@@ -2,3 +2,4 @@ var/
 __pycache__/
 *.pyc
 .DS_Store
+local_paths.py
